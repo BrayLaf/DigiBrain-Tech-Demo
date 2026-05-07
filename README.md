@@ -17,6 +17,8 @@ This demo exists to show one thing: documents becoming graphs, instantly.
 ## Run locally
 
 ```bash
+git clone https://github.com/BrayLaf/DigiBrain-Tech-Demo.git
+cd DigiBrain-Tech-Demo
 npm install
 npm run dev
 ```
