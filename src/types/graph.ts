@@ -7,6 +7,7 @@ export interface BrainNode {
   content: string;
   tags: string[];
   createdAt: number;
+  position: { x: number; y: number };
 }
 
 export interface BrainEdge {
