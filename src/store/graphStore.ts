@@ -1,0 +1,37 @@
+import { create } from 'zustand';
+import type { BrainNode, BrainEdge } from '../types/graph';
+
+interface GraphState {
+  nodes: BrainNode[];
+  edges: BrainEdge[];
+  addNode: (node: BrainNode) => void;
+  updateNode: (id: string, patch: Partial<BrainNode>) => void;
+  removeNode: (id: string) => void;
+  addEdge: (edge: BrainEdge) => void;
+  removeEdge: (id: string) => void;
+}
+
+export const useGraphStore = create<GraphState>((set) => ({
+  nodes: [],
+  edges: [],
+
+  addNode: (node) =>
+    set((state) => ({ nodes: [...state.nodes, node] })),
+
+  updateNode: (id, patch) =>
+    set((state) => ({
+      nodes: state.nodes.map((n) => (n.id === id ? { ...n, ...patch } : n)),
+    })),
+
+  removeNode: (id) =>
+    set((state) => ({
+      nodes: state.nodes.filter((n) => n.id !== id),
+      edges: state.edges.filter((e) => e.source !== id && e.target !== id),
+    })),
+
+  addEdge: (edge) =>
+    set((state) => ({ edges: [...state.edges, edge] })),
+
+  removeEdge: (id) =>
+    set((state) => ({ edges: state.edges.filter((e) => e.id !== id) })),
+}));
