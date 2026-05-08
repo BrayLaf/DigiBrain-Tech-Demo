@@ -1,4 +1,4 @@
-export type NodeType = 'document' | 'topic' | 'tag';
+export type NodeType = 'document' | 'topic' | 'tag' | 'person' | 'memory' | 'message';
 
 export interface BrainNode {
   id: string;
@@ -8,6 +8,7 @@ export interface BrainNode {
   tags: string[];
   createdAt: number;
   position: { x: number; y: number };
+  [key: string]: unknown;
 }
 
 export interface BrainEdge {
