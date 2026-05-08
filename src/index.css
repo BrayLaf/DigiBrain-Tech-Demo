@@ -11,6 +11,30 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
+  --node-document-bg: rgba(59, 130, 246, 0.06);
+  --node-document-border: rgba(59, 130, 246, 0.35);
+  --node-document-icon: #3b82f6;
+
+  --node-topic-bg: rgba(139, 92, 246, 0.06);
+  --node-topic-border: rgba(139, 92, 246, 0.35);
+  --node-topic-icon: #8b5cf6;
+
+  --node-tag-bg: rgba(13, 148, 136, 0.06);
+  --node-tag-border: rgba(13, 148, 136, 0.35);
+  --node-tag-icon: #0d9488;
+
+  --node-person-bg: rgba(234, 88, 12, 0.06);
+  --node-person-border: rgba(234, 88, 12, 0.35);
+  --node-person-icon: #ea580c;
+
+  --node-memory-bg: rgba(217, 70, 239, 0.06);
+  --node-memory-border: rgba(217, 70, 239, 0.35);
+  --node-memory-icon: #d946ef;
+
+  --node-message-bg: rgba(20, 184, 166, 0.06);
+  --node-message-border: rgba(20, 184, 166, 0.35);
+  --node-message-icon: #14b8a6;
+
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
@@ -43,6 +67,30 @@
     --social-bg: rgba(47, 48, 58, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+
+    --node-document-bg: rgba(96, 165, 250, 0.1);
+    --node-document-border: rgba(96, 165, 250, 0.3);
+    --node-document-icon: #60a5fa;
+
+    --node-topic-bg: rgba(167, 139, 250, 0.1);
+    --node-topic-border: rgba(167, 139, 250, 0.3);
+    --node-topic-icon: #a78bfa;
+
+    --node-tag-bg: rgba(45, 212, 191, 0.1);
+    --node-tag-border: rgba(45, 212, 191, 0.3);
+    --node-tag-icon: #2dd4bf;
+
+    --node-person-bg: rgba(251, 146, 60, 0.1);
+    --node-person-border: rgba(251, 146, 60, 0.3);
+    --node-person-icon: #fb923c;
+
+    --node-memory-bg: rgba(232, 121, 249, 0.1);
+    --node-memory-border: rgba(232, 121, 249, 0.3);
+    --node-memory-icon: #e879f9;
+
+    --node-message-bg: rgba(45, 212, 191, 0.1);
+    --node-message-border: rgba(45, 212, 191, 0.3);
+    --node-message-icon: #2dd4bf;
   }
 
   #social .button-icon {

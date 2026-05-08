@@ -1,22 +1,33 @@
 import { useCallback } from 'react';
 import GraphCanvas from './graph/GraphCanvas';
 import { useGraphStore } from './store/graphStore';
+import type { NodeType } from './types/graph';
 
-let nodeCount = 0;
+const NODE_TYPES: NodeType[] = ['document', 'topic', 'tag', 'person', 'memory', 'message'];
+
+let cycleIndex = 0;
+const typeCounters: Record<string, number> = {};
 
 function App() {
   const addNode = useGraphStore((s) => s.addNode);
 
   const handleAddNode = useCallback(() => {
-    nodeCount += 1;
+    const type = NODE_TYPES[cycleIndex % NODE_TYPES.length];
+    cycleIndex += 1;
+    typeCounters[type] = (typeCounters[type] ?? 0) + 1;
+    const n = typeCounters[type];
+    const totalNodes = cycleIndex;
     addNode({
-      id: `node-${nodeCount}`,
-      type: 'topic',
-      title: `Node ${nodeCount}`,
-      content: '',
+      id: `node-${totalNodes}`,
+      type,
+      title: `${type.charAt(0).toUpperCase() + type.slice(1)} ${n}`,
+      content:
+        type === 'document'
+          ? 'Sample document content that demonstrates the two-line preview capability of document nodes.'
+          : '',
       tags: [],
       createdAt: Date.now(),
-      position: { x: 80 + ((nodeCount - 1) * 180) % 540, y: 80 + Math.floor((nodeCount - 1) / 3) * 120 },
+      position: { x: 80 + ((totalNodes - 1) * 220) % 660, y: 80 + Math.floor((totalNodes - 1) / 3) * 160 },
     });
   }, [addNode]);
 

@@ -11,6 +11,22 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useGraphStore } from '../store/graphStore';
+import type { BrainNode } from '../types/graph';
+import DocumentNode from './nodes/DocumentNode';
+import TopicNode from './nodes/TopicNode';
+import TagNode from './nodes/TagNode';
+import PersonNode from './nodes/PersonNode';
+import MemoryNode from './nodes/MemoryNode';
+import MessageNode from './nodes/MessageNode';
+
+const nodeTypes = {
+  document: DocumentNode,
+  topic: TopicNode,
+  tag: TagNode,
+  person: PersonNode,
+  memory: MemoryNode,
+  message: MessageNode,
+};
 
 export default function GraphCanvas() {
   const brainNodes = useGraphStore((s) => s.nodes);
@@ -18,15 +34,16 @@ export default function GraphCanvas() {
   const updateNode = useGraphStore((s) => s.updateNode);
   const addEdge = useGraphStore((s) => s.addEdge);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node<{ label: string }>>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<BrainNode>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   useEffect(() => {
     setNodes(
       brainNodes.map((n) => ({
         id: n.id,
+        type: n.type,
         position: n.position,
-        data: { label: n.title },
+        data: n,
       })),
     );
   }, [brainNodes, setNodes]);
@@ -54,7 +71,7 @@ export default function GraphCanvas() {
   );
 
   const onNodeDragStop = useCallback(
-    (_event: React.MouseEvent, node: Node<{ label: string }>) => {
+    (_event: React.MouseEvent, node: Node<BrainNode>) => {
       updateNode(node.id, { position: node.position });
     },
     [updateNode],
@@ -69,6 +86,8 @@ export default function GraphCanvas() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeDragStop={onNodeDragStop}
+        nodeTypes={nodeTypes}
+        minZoom={0.05}
         fitView
       >
         <Background />
