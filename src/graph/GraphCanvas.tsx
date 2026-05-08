@@ -28,7 +28,11 @@ const nodeTypes = {
   message: MessageNode,
 };
 
-export default function GraphCanvas() {
+interface GraphCanvasProps {
+  onNodeClick?: (nodeId: string) => void;
+}
+
+export default function GraphCanvas({ onNodeClick }: GraphCanvasProps) {
   const brainNodes = useGraphStore((s) => s.nodes);
   const brainEdges = useGraphStore((s) => s.edges);
   const updateNode = useGraphStore((s) => s.updateNode);
@@ -77,6 +81,13 @@ export default function GraphCanvas() {
     [updateNode],
   );
 
+  const handleNodeClick = useCallback(
+    (_: React.MouseEvent, node: Node<BrainNode>) => {
+      onNodeClick?.(node.id);
+    },
+    [onNodeClick],
+  );
+
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <ReactFlow
@@ -86,6 +97,7 @@ export default function GraphCanvas() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeDragStop={onNodeDragStop}
+        onNodeClick={handleNodeClick}
         nodeTypes={nodeTypes}
         minZoom={0.05}
         fitView
