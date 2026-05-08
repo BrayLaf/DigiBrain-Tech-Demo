@@ -46,7 +46,7 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
 
   const editNode = mode === 'edit' ? nodes.find((n) => n.id === nodeId) : undefined;
 
-  // if editing, try to get the connectd person and topic and prefill those fields.
+  // if editing, try to get the connected person and topic and prefill those fields.
   const derivedPerson = (() => {
     if (!nodeId) return '';
     const e = edges.find(
@@ -70,6 +70,8 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
   const [content, setContent] = useState(editNode?.content ?? '');
   const [tags, setTags] = useState((editNode?.tags ?? []).join(', '));
   const [titleError, setTitleError] = useState(false);
+  // personError only applies to create mode — in edit mode the node already has its parent relationship.
+  const [personError, setPersonError] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
@@ -89,7 +91,14 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
       return;
     }
 
-    const tagList = tags.split(',').map((t) => t.trim()).filter(Boolean);
+    // Person is required on create — the node must belong to someone from the start.
+    if (mode === 'create' && !person.trim()) {
+      setPersonError(true);
+      return;
+    }
+
+    // Deduplicate via Set so "work, work" doesn't produce two edges to the same tag node.
+    const tagList = [...new Set(tags.split(',').map((t) => t.trim()).filter(Boolean))];
 
     if (mode === 'create') {
       const pos = { x: 120 + Math.random() * 500, y: 120 + Math.random() * 400 };
@@ -105,13 +114,25 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
         position: pos,
       });
 
-      // Resolve new person/topic nodes first so we can connect them to the new node and each other as needed.
+      // Resolve or create person/topic nodes, reuses existing ones to avoid duplicates, and checks if the topic already belongs to the person before wiring edges.
       const personId = person.trim()
         ? resolveOrCreate('person', person.trim(), { x: pos.x, y: pos.y - 220 })
         : null;
       const topicId = topic.trim()
         ? resolveOrCreate('topic', topic.trim(), { x: pos.x + 280, y: pos.y - 120 })
         : null;
+
+      // Auto-link person→topic if the topic has no existing person parent, establishing
+      // the hierarchy so the node can connect through the topic alone.
+      if (personId && topicId) {
+        const topicHasParent = useGraphStore.getState().edges.some(
+          (e) => e.target === topicId &&
+            useGraphStore.getState().nodes.find((n) => n.id === e.source && n.type === 'person'),
+        );
+        if (!topicHasParent) {
+          addEdge({ id: crypto.randomUUID(), source: personId, target: topicId });
+        }
+      }
 
       if (topicId) {
         addEdge({ id: crypto.randomUUID(), source: topicId, target: newId });
@@ -143,6 +164,18 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
         ? resolveOrCreate('topic', topic.trim(), { x: pos.x + 280, y: pos.y - 120 })
         : null;
 
+      // Auto-link person→topic if the topic has no existing person parent — same as create mode.
+      if (newPersonId && newTopicId) {
+        const topicHasParent = useGraphStore.getState().edges.some(
+          (e) => e.target === newTopicId &&
+            useGraphStore.getState().nodes.find((n) => n.id === e.source && n.type === 'person'),
+        );
+        if (!topicHasParent) {
+          addEdge({ id: crypto.randomUUID(), source: newPersonId, target: newTopicId });
+        }
+      }
+
+      // Check after the potential auto-link above so a newly parented topic is recognised.
       const topicUnderPerson = !!(newPersonId && newTopicId &&
         useGraphStore.getState().edges.some(
           (e) => e.source === newPersonId && e.target === newTopicId,
@@ -204,9 +237,9 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
   }
 
   return (
-    <div className="node-panel" role="dialog" aria-modal="true">
+    <div className="node-panel" role="dialog" aria-modal="true" aria-labelledby="node-panel-title">
       <div className="node-panel__header">
-        <h2 className="node-panel__title">{mode === 'create' ? 'Add Node' : 'Edit Node'}</h2>
+        <h2 id="node-panel-title" className="node-panel__title">{mode === 'create' ? 'Add Node' : 'Edit Node'}</h2>
         <button className="node-panel__close" onClick={onClose} aria-label="Close panel">✕</button>
       </div>
 
@@ -225,14 +258,17 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
         </div>
 
         <div className="node-panel__field">
-          <label className="node-panel__label" htmlFor="np-person">Person *</label>
+          <label className="node-panel__label" htmlFor="np-person">
+            Person {mode === 'create' ? '*' : <span className="node-panel__optional">(optional)</span>}
+          </label>
           <input
             id="np-person"
-            className="node-panel__input"
+            className={`node-panel__input${personError ? ' node-panel__input--error' : ''}`}
             value={person}
-            onChange={(e) => setPerson(e.target.value)}
+            onChange={(e) => { setPerson(e.target.value); setPersonError(false); }}
             placeholder="e.g. John"
           />
+          {personError && <span className="node-panel__error-msg">Person is required</span>}
         </div>
 
         <div className="node-panel__field">
