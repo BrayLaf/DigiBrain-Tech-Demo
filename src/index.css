@@ -139,12 +139,14 @@ p {
 /* ── React Flow: hide handles until the node is hovered or selected ── */
 .react-flow__handle {
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.15s ease;
 }
 
 .react-flow__node:hover .react-flow__handle,
 .react-flow__node.selected .react-flow__handle {
   opacity: 1;
+  pointer-events: auto;
 }
 
 /* ── Edge label editor overlay ───────────────────────────────────── */

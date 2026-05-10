@@ -10,6 +10,7 @@ interface GraphState {
   addEdge: (edge: BrainEdge) => void;
   updateEdge: (id: string, patch: Partial<BrainEdge>) => void;
   removeEdge: (id: string) => void;
+  removeEdges: (ids: string[]) => void;
 }
 
 export const useGraphStore = create<GraphState>((set) => ({
@@ -40,4 +41,9 @@ export const useGraphStore = create<GraphState>((set) => ({
 
   removeEdge: (id) =>
     set((state) => ({ edges: state.edges.filter((e) => e.id !== id) })),
+
+  removeEdges: (ids) => {
+    const idSet = new Set(ids);
+    set((state) => ({ edges: state.edges.filter((e) => !idSet.has(e.id)) }));
+  },
 }));

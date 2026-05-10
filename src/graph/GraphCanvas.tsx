@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ReactFlow,
   useNodesState,
@@ -46,11 +46,12 @@ export default function GraphCanvas({ onNodeClick }: GraphCanvasProps) {
   const updateNode = useGraphStore((s) => s.updateNode);
   const storeAddEdge = useGraphStore((s) => s.addEdge);
   const storeUpdateEdge = useGraphStore((s) => s.updateEdge);
-  const storeRemoveEdge = useGraphStore((s) => s.removeEdge);
+  const storeRemoveEdges = useGraphStore((s) => s.removeEdges);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<BrainNode>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [editingEdge, setEditingEdge] = useState<EdgeLabelEdit | null>(null);
+  const edgeEditCancelled = useRef(false);
 
   useEffect(() => {
     setNodes(
@@ -87,13 +88,14 @@ export default function GraphCanvas({ onNodeClick }: GraphCanvasProps) {
     [storeAddEdge],
   );
 
-  // Sync React Flow edge deletions (keyboard) back to the store.
+  // Sync React Flow edge deletions (keyboard) back to the store in one set call.
   const handleEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
       onEdgesChange(changes);
-      changes.filter((c) => c.type === 'remove').forEach((c) => storeRemoveEdge(c.id));
+      const removedIds = changes.filter((c) => c.type === 'remove').map((c) => c.id);
+      if (removedIds.length > 0) storeRemoveEdges(removedIds);
     },
-    [onEdgesChange, storeRemoveEdge],
+    [onEdgesChange, storeRemoveEdges],
   );
 
   const onNodeDragStop = useCallback(
@@ -156,9 +158,12 @@ export default function GraphCanvas({ onNodeClick }: GraphCanvasProps) {
             }
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdgeLabel();
-              if (e.key === 'Escape') setEditingEdge(null);
+              if (e.key === 'Escape') { edgeEditCancelled.current = true; setEditingEdge(null); }
             }}
-            onBlur={saveEdgeLabel}
+            onBlur={() => {
+              if (edgeEditCancelled.current) { edgeEditCancelled.current = false; return; }
+              saveEdgeLabel();
+            }}
             placeholder="Edge label…"
           />
         </div>
