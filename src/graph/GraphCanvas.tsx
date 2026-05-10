@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ReactFlow,
   useNodesState,
@@ -7,6 +7,7 @@ import {
   Controls,
   type Node,
   type Edge,
+  type EdgeChange,
   type Connection,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -32,14 +33,24 @@ interface GraphCanvasProps {
   onNodeClick?: (nodeId: string) => void;
 }
 
+interface EdgeLabelEdit {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+}
+
 export default function GraphCanvas({ onNodeClick }: GraphCanvasProps) {
   const brainNodes = useGraphStore((s) => s.nodes);
   const brainEdges = useGraphStore((s) => s.edges);
   const updateNode = useGraphStore((s) => s.updateNode);
-  const addEdge = useGraphStore((s) => s.addEdge);
+  const storeAddEdge = useGraphStore((s) => s.addEdge);
+  const storeUpdateEdge = useGraphStore((s) => s.updateEdge);
+  const storeRemoveEdge = useGraphStore((s) => s.removeEdge);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<BrainNode>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [editingEdge, setEditingEdge] = useState<EdgeLabelEdit | null>(null);
 
   useEffect(() => {
     setNodes(
@@ -59,19 +70,30 @@ export default function GraphCanvas({ onNodeClick }: GraphCanvasProps) {
         source: e.source,
         target: e.target,
         label: e.label,
+        type: 'default',
       })),
     );
   }, [brainEdges, setEdges]);
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      addEdge({
+      if (connection.source === connection.target) return;
+      storeAddEdge({
         id: crypto.randomUUID(),
         source: connection.source,
         target: connection.target,
       });
     },
-    [addEdge],
+    [storeAddEdge],
+  );
+
+  // Sync React Flow edge deletions (keyboard) back to the store.
+  const handleEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      onEdgesChange(changes);
+      changes.filter((c) => c.type === 'remove').forEach((c) => storeRemoveEdge(c.id));
+    },
+    [onEdgesChange, storeRemoveEdge],
   );
 
   const onNodeDragStop = useCallback(
@@ -88,23 +110,59 @@ export default function GraphCanvas({ onNodeClick }: GraphCanvasProps) {
     [onNodeClick],
   );
 
+  const onEdgeDoubleClick = useCallback(
+    (event: React.MouseEvent, edge: Edge) => {
+      setEditingEdge({ id: edge.id, label: String(edge.label ?? ''), x: event.clientX, y: event.clientY });
+    },
+    [],
+  );
+
+  const saveEdgeLabel = useCallback(() => {
+    if (!editingEdge) return;
+    storeUpdateEdge(editingEdge.id, { label: editingEdge.label || undefined });
+    setEditingEdge(null);
+  }, [editingEdge, storeUpdateEdge]);
+
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        onEdgesChange={handleEdgesChange}
         onConnect={onConnect}
         onNodeDragStop={onNodeDragStop}
         onNodeClick={handleNodeClick}
+        onEdgeDoubleClick={onEdgeDoubleClick}
         nodeTypes={nodeTypes}
+        deleteKeyCode={['Backspace', 'Delete']}
         minZoom={0.05}
         fitView
       >
         <Background />
         <Controls />
       </ReactFlow>
+
+      {editingEdge && (
+        <div
+          className="edge-label-editor"
+          style={{ left: editingEdge.x, top: editingEdge.y }}
+        >
+          <input
+            autoFocus
+            value={editingEdge.label}
+            onChange={(e) =>
+              setEditingEdge((prev) => (prev ? { ...prev, label: e.target.value } : null))
+            }
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') saveEdgeLabel();
+              if (e.key === 'Escape') setEditingEdge(null);
+            }}
+            onBlur={saveEdgeLabel}
+            placeholder="Edge label…"
+          />
+        </div>
+      )}
     </div>
   );
 }
