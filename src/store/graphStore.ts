@@ -8,7 +8,9 @@ interface GraphState {
   updateNode: (id: string, patch: Partial<BrainNode>) => void;
   removeNode: (id: string) => void;
   addEdge: (edge: BrainEdge) => void;
+  updateEdge: (id: string, patch: Partial<BrainEdge>) => void;
   removeEdge: (id: string) => void;
+  removeEdges: (ids: string[]) => void;
 }
 
 export const useGraphStore = create<GraphState>((set) => ({
@@ -32,6 +34,16 @@ export const useGraphStore = create<GraphState>((set) => ({
   addEdge: (edge) =>
     set((state) => ({ edges: [...state.edges, edge] })),
 
+  updateEdge: (id, patch) =>
+    set((state) => ({
+      edges: state.edges.map((e) => (e.id === id ? { ...e, ...patch } : e)),
+    })),
+
   removeEdge: (id) =>
     set((state) => ({ edges: state.edges.filter((e) => e.id !== id) })),
+
+  removeEdges: (ids) => {
+    const idSet = new Set(ids);
+    set((state) => ({ edges: state.edges.filter((e) => !idSet.has(e.id)) }));
+  },
 }));
