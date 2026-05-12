@@ -14,5 +14,9 @@ export default defineConfig({
       '@types': path.resolve(__dirname, './src/types'),
       '@graph': path.resolve(__dirname, './src/graph'),
     },
-  }
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+  },
 });

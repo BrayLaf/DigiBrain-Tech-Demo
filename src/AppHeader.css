@@ -1,0 +1,121 @@
+/* ── App Header ─────────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  gap: 16px;
+}
+
+.app-header__brand {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.app-header__name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-h);
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+
+.app-header__sub {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1;
+}
+
+.app-header__privacy {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text);
+  font-size: 12px;
+  flex: 1;
+  justify-content: center;
+}
+
+.app-header__team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.app-header__team-label {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.app-header__link {
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.12s;
+}
+
+.app-header__link:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+/* ── Mobile (≤ 768px) ────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .app-header {
+    height: auto;
+    padding: 6px 14px 7px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Row 1: brand left, privacy right */
+  .app-header__brand {
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+  }
+
+  .app-header__name {
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  .app-header__sub {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .app-header__privacy {
+    flex: 0 0 auto;
+    font-size: 11px;
+    gap: 4px;
+    justify-content: flex-end;
+  }
+
+  /* Row 2: team spans full width, centered */
+  .app-header__team {
+    flex: 0 0 100%;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+  }
+
+  .app-header__team-label,
+  .app-header__link {
+    font-size: 11px;
+  }
+}
