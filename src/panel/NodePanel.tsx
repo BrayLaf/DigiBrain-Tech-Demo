@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGraphStore } from '../store/graphStore';
+import { genId } from '../utils/id';
 import type { NodeType } from '../types/graph';
 import './NodePanel.css';
 
@@ -25,7 +26,7 @@ function resolveOrCreate(
   );
   //if we find one, return its id, otherwise create a new one and return the new id
   if (existing) return existing.id;
-  const id = crypto.randomUUID();
+  const id = genId();
   addNode({ id, type, title: titleVal, content: '', tags: [], createdAt: Date.now(), position: pos });
   return id;
 }
@@ -75,6 +76,7 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
+  const personRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { titleRef.current?.focus(); }, []);
 
@@ -94,6 +96,8 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
     // Person is required on create — the node must belong to someone from the start.
     if (mode === 'create' && !person.trim()) {
       setPersonError(true);
+      personRef.current?.focus();
+      personRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
@@ -102,7 +106,7 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
 
     if (mode === 'create') {
       const pos = { x: 120 + Math.random() * 500, y: 120 + Math.random() * 400 };
-      const newId = crypto.randomUUID();
+      const newId = genId();
 
       useGraphStore.getState().addNode({
         id: newId,
@@ -130,12 +134,12 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
             useGraphStore.getState().nodes.find((n) => n.id === e.source && n.type === 'person'),
         );
         if (!topicHasParent) {
-          addEdge({ id: crypto.randomUUID(), source: personId, target: topicId });
+          addEdge({ id: genId(), source: personId, target: topicId });
         }
       }
 
       if (topicId) {
-        addEdge({ id: crypto.randomUUID(), source: topicId, target: newId });
+        addEdge({ id: genId(), source: topicId, target: newId });
       }
       if (personId) {
         // Skip person→node when the topic is already under that person — connecting via topic is enough.
@@ -143,13 +147,13 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
           (e) => e.source === personId && e.target === topicId,
         );
         if (!topicUnderPerson) {
-          addEdge({ id: crypto.randomUUID(), source: personId, target: newId });
+          addEdge({ id: genId(), source: personId, target: newId });
         }
       }
 
       tagList.forEach((tag, i) => {
         const tagId = resolveOrCreate('tag', tag, { x: pos.x - 180 + i * 140, y: pos.y + 160 });
-        addEdge({ id: crypto.randomUUID(), source: newId, target: tagId });
+        addEdge({ id: genId(), source: newId, target: tagId });
       });
     } else if (mode === 'edit' && nodeId && editNode) {
       const pos = editNode.position;
@@ -171,7 +175,7 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
             useGraphStore.getState().nodes.find((n) => n.id === e.source && n.type === 'person'),
         );
         if (!topicHasParent) {
-          addEdge({ id: crypto.randomUUID(), source: newPersonId, target: newTopicId });
+          addEdge({ id: genId(), source: newPersonId, target: newTopicId });
         }
       }
 
@@ -194,7 +198,7 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
         if (oldPersonEdge) removeEdge(oldPersonEdge.id);
       } else if (person.trim() !== oldPersonTitle) {
         if (oldPersonEdge) removeEdge(oldPersonEdge.id);
-        if (newPersonId) addEdge({ id: crypto.randomUUID(), source: newPersonId, target: nodeId });
+        if (newPersonId) addEdge({ id: genId(), source: newPersonId, target: nodeId });
       }
 
       // Topic reconciliation
@@ -206,7 +210,7 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
         : '';
       if (topic.trim() !== oldTopicTitle) {
         if (oldTopicEdge) removeEdge(oldTopicEdge.id);
-        if (newTopicId) addEdge({ id: crypto.randomUUID(), source: newTopicId, target: nodeId });
+        if (newTopicId) addEdge({ id: genId(), source: newTopicId, target: nodeId });
       }
 
       // Tag reconciliation
@@ -222,7 +226,7 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
       tagList.forEach((tag, i) => {
         if (!oldTagTitles.includes(tag)) {
           const tagId = resolveOrCreate('tag', tag, { x: pos.x - 180 + i * 140, y: pos.y + 160 });
-          addEdge({ id: crypto.randomUUID(), source: nodeId, target: tagId });
+          addEdge({ id: genId(), source: nodeId, target: tagId });
         }
       });
     }
@@ -262,6 +266,7 @@ export default function NodePanel({ mode, nodeId, onClose }: NodePanelProps) {
             Person {mode === 'create' ? '*' : <span className="node-panel__optional">(optional)</span>}
           </label>
           <input
+            ref={personRef}
             id="np-person"
             className={`node-panel__input${personError ? ' node-panel__input--error' : ''}`}
             value={person}

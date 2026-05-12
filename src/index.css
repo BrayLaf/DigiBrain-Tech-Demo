@@ -1,4 +1,5 @@
 :root {
+  --header-h: 48px;
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -54,6 +55,12 @@
   }
 }
 
+@media (max-width: 768px) {
+  :root {
+    --header-h: 56px;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;
@@ -101,10 +108,14 @@
 #root {
   width: 100%;
   height: 100vh;
+  height: 100dvh; /* tracks visual viewport — shrinks when iOS keyboard opens */
+  display: flex;
+  flex-direction: column;
 }
 
 body {
   margin: 0;
+  overflow: hidden; /* prevent page scroll — all scrolling is within #root */
 }
 
 h1,
