@@ -2,37 +2,61 @@ import { useState } from 'react';
 import AppHeader from './AppHeader';
 import GraphCanvas from './graph/GraphCanvas';
 import NodePanel from './panel/NodePanel';
+import MiniPanel from './panel/MiniPanel';
 
-type PanelState =
+type EditPanel =
   | { open: false }
   | { open: true; mode: 'create' }
   | { open: true; mode: 'edit'; nodeId: string };
 
 function App() {
-  const [panel, setPanel] = useState<PanelState>({ open: false });
+  const [detailNodeId, setDetailNodeId] = useState<string | null>(null);
+  const [editPanel, setEditPanel] = useState<EditPanel>({ open: false });
+
+  function openEdit(nodeId: string) {
+    setDetailNodeId(null);
+    setEditPanel({ open: true, mode: 'edit', nodeId });
+  }
+
+  function closeAll() {
+    setDetailNodeId(null);
+    setEditPanel({ open: false });
+  }
 
   return (
-    <>
-      <AppHeader />
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-        <GraphCanvas
-          onNodeClick={(id) => setPanel({ open: true, mode: 'edit', nodeId: id })}
+  <>
+    <AppHeader />
+    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+      <GraphCanvas
+        onNodeClick={(id) => { setEditPanel({ open: false }); setDetailNodeId(id); }}
+        onPaneClick={closeAll}
+      />
+      <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10 }}>
+        <button
+          onClick={() => { setDetailNodeId(null); setEditPanel({ open: true, mode: 'create' }); }}
+          style={{ padding: '6px 14px', cursor: 'pointer' }}
+        >
+          Add Node
+        </button>
+      </div>
+
+      {detailNodeId && (
+        <MiniPanel
+          key={detailNodeId}
+          nodeId={detailNodeId}
+          onClose={() => setDetailNodeId(null)}
+          onEdit={openEdit}
+          onSelectNode={(id) => setDetailNodeId(id)}
         />
-        <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10 }}>
-          <button
-            onClick={() => setPanel({ open: true, mode: 'create' })}
-            style={{ padding: '6px 14px', cursor: 'pointer' }}
-          >
-            Add Node
-          </button>
-        </div>
-        {panel.open && (
-          <NodePanel
-            key={panel.mode === 'edit' ? panel.nodeId : 'create'}
-            mode={panel.mode}
-            nodeId={panel.mode === 'edit' ? panel.nodeId : undefined}
-            onClose={() => setPanel({ open: false })}
-          />
+      )}
+
+      {editPanel.open && (
+        <NodePanel
+          key={editPanel.mode === 'edit' ? editPanel.nodeId : 'create'}
+          mode={editPanel.mode}
+          nodeId={editPanel.mode === 'edit' ? editPanel.nodeId : undefined}
+          onClose={() => setEditPanel({ open: false })}
+        />
         )}
       </div>
     </>

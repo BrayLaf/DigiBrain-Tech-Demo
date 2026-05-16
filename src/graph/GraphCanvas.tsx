@@ -32,6 +32,7 @@ const nodeTypes = {
 
 interface GraphCanvasProps {
   onNodeClick?: (nodeId: string) => void;
+  onPaneClick?: () => void;
 }
 
 interface EdgeLabelEdit {
@@ -41,7 +42,7 @@ interface EdgeLabelEdit {
   y: number;
 }
 
-export default function GraphCanvas({ onNodeClick }: GraphCanvasProps) {
+export default function GraphCanvas({ onNodeClick, onPaneClick }: GraphCanvasProps) {
   const brainNodes = useGraphStore((s) => s.nodes);
   const brainEdges = useGraphStore((s) => s.edges);
   const updateNode = useGraphStore((s) => s.updateNode);
@@ -136,6 +137,7 @@ export default function GraphCanvas({ onNodeClick }: GraphCanvasProps) {
         onConnect={onConnect}
         onNodeDragStop={onNodeDragStop}
         onNodeClick={handleNodeClick}
+        onPaneClick={onPaneClick}
         onEdgeDoubleClick={onEdgeDoubleClick}
         nodeTypes={nodeTypes}
         deleteKeyCode={['Backspace', 'Delete']}
