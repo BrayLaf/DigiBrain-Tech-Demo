@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import AppHeader from './AppHeader';
 import GraphCanvas from './graph/GraphCanvas';
 import NodePanel from './panel/NodePanel';
 import MiniPanel from './panel/MiniPanel';
@@ -23,7 +24,9 @@ function App() {
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+  <>
+    <AppHeader />
+    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
       <GraphCanvas
         onNodeClick={(id) => { setEditPanel({ open: false }); setDetailNodeId(id); }}
         onPaneClick={closeAll}
@@ -54,8 +57,9 @@ function App() {
           nodeId={editPanel.mode === 'edit' ? editPanel.nodeId : undefined}
           onClose={() => setEditPanel({ open: false })}
         />
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
 

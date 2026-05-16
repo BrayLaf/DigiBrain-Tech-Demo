@@ -12,6 +12,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useGraphStore } from '../store/graphStore';
+import { genId } from '../utils/id';
 import type { BrainNode } from '../types/graph';
 import DocumentNode from './nodes/DocumentNode';
 import TopicNode from './nodes/TopicNode';
@@ -81,7 +82,7 @@ export default function GraphCanvas({ onNodeClick, onPaneClick }: GraphCanvasPro
     (connection: Connection) => {
       if (connection.source === connection.target) return;
       storeAddEdge({
-        id: crypto.randomUUID(),
+        id: genId(),
         source: connection.source,
         target: connection.target,
       });
