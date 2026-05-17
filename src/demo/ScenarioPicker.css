@@ -1,0 +1,185 @@
+/* ── Backdrop ───────────────────────────────────────────────── */
+.sp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: sp-fade-in 0.15s ease;
+}
+
+.sp-backdrop--welcome {
+  background: var(--bg);
+  animation: sp-fade-in 0.25s ease;
+}
+
+@keyframes sp-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Panel ──────────────────────────────────────────────────── */
+.sp-panel {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 900px;
+  padding: 28px 28px 32px;
+  animation: sp-slide-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.sp-panel--welcome {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  max-width: 860px;
+  padding: 48px 28px 40px;
+}
+
+@keyframes sp-slide-up {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.sp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sp-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.sp-panel--welcome .sp-title {
+  font-size: 24px;
+  letter-spacing: -0.4px;
+}
+
+.sp-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 15px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  line-height: 1;
+  transition: background 0.12s, color 0.12s;
+}
+.sp-close:hover {
+  background: var(--border);
+  color: var(--text-h);
+}
+
+.sp-subtitle {
+  font-size: 13px;
+  color: var(--text);
+  margin: 0 0 24px;
+}
+
+.sp-panel--welcome .sp-subtitle {
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+/* ── Cards ──────────────────────────────────────────────────── */
+.sp-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.sp-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 20px 16px 22px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  font-family: var(--sans);
+  min-width: 0;
+}
+
+.sp-card:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.sp-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sp-card__icon {
+  font-size: 30px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.sp-card__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h);
+  letter-spacing: -0.1px;
+}
+
+.sp-card__desc {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* ── Tablet: 2×2 grid ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .sp-panel {
+    padding: 20px 16px 24px;
+  }
+
+  .sp-panel--welcome {
+    padding: 32px 16px 28px;
+  }
+
+  .sp-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* ── Phone: single column ───────────────────────────────────── */
+@media (max-width: 360px) {
+  .sp-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .sp-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 14px;
+  }
+
+  .sp-card__icon {
+    font-size: 26px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+}

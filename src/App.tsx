@@ -3,6 +3,13 @@ import AppHeader from './AppHeader';
 import GraphCanvas from './graph/GraphCanvas';
 import NodePanel from './panel/NodePanel';
 import MiniPanel from './panel/MiniPanel';
+import ScenarioPicker from './demo/ScenarioPicker';
+import OnboardingTooltip from './onboarding/OnboardingTooltip';
+import { allScenarios } from './store/seedData';
+import type { Scenario } from './store/seedData';
+import { useGraphStore } from './store/graphStore';
+
+const ONBOARDING_KEY = 'digibrain_onboarding_done';
 
 type EditPanel =
   | { open: false }
@@ -12,6 +19,12 @@ type EditPanel =
 function App() {
   const [detailNodeId, setDetailNodeId] = useState<string | null>(null);
   const [editPanel, setEditPanel] = useState<EditPanel>({ open: false });
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [showPicker, setShowPicker] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState<number | null>(null);
+
+  const nodes = useGraphStore((s) => s.nodes);
+  const setGraph = useGraphStore((s) => s.setGraph);
 
   function openEdit(nodeId: string) {
     setDetailNodeId(null);
@@ -23,6 +36,49 @@ function App() {
     setEditPanel({ open: false });
   }
 
+  function handleSelectScenario(scenario: Scenario) {
+    // Confirmation only from toolbar picker (not welcome), when graph has nodes
+    if (!showWelcome && nodes.length > 0) {
+      const ok = window.confirm(`Replace the current graph with the "${scenario.name}" scenario?`);
+      if (!ok) return;
+    }
+    setGraph(scenario.nodes, scenario.edges);
+    setShowWelcome(false);
+    setShowPicker(false);
+    closeAll();
+    if (!sessionStorage.getItem(ONBOARDING_KEY)) {
+      setOnboardingStep(0);
+    }
+  }
+
+  function handleOnboardingNext() {
+    if (onboardingStep === null) return;
+    if (onboardingStep >= 3) {
+      sessionStorage.setItem(ONBOARDING_KEY, '1');
+      setOnboardingStep(null);
+    } else {
+      setOnboardingStep(onboardingStep + 1);
+    }
+  }
+
+  function handleOnboardingSkip() {
+    sessionStorage.setItem(ONBOARDING_KEY, '1');
+    setOnboardingStep(null);
+  }
+
+  function handleResetDemo() {
+    if (nodes.length > 0) {
+      const ok = window.confirm('Reset and clear your current graph?');
+      if (!ok) return;
+    }
+    setGraph([], []);
+    sessionStorage.removeItem(ONBOARDING_KEY);
+    setShowWelcome(true);
+    setShowPicker(false);
+    setOnboardingStep(null);
+    closeAll();
+  }
+
   return (
   <>
     <AppHeader />
@@ -31,12 +87,24 @@ function App() {
         onNodeClick={(id) => { setEditPanel({ open: false }); setDetailNodeId(id); }}
         onPaneClick={closeAll}
       />
-      <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10, display: 'flex', gap: 8 }}>
         <button
           onClick={() => { setDetailNodeId(null); setEditPanel({ open: true, mode: 'create' }); }}
           style={{ padding: '6px 14px', cursor: 'pointer' }}
         >
           Add Node
+        </button>
+        <button
+          onClick={() => setShowPicker(true)}
+          style={{ padding: '6px 14px', cursor: 'pointer' }}
+        >
+          Demo scenarios
+        </button>
+        <button
+          onClick={handleResetDemo}
+          style={{ padding: '6px 14px', cursor: 'pointer' }}
+        >
+          Reset demo
         </button>
       </div>
 
@@ -57,9 +125,36 @@ function App() {
           nodeId={editPanel.mode === 'edit' ? editPanel.nodeId : undefined}
           onClose={() => setEditPanel({ open: false })}
         />
-        )}
-      </div>
-    </>
+      )}
+
+      {/* Welcome screen — shown on first load, forced pick */}
+      {showWelcome && (
+        <ScenarioPicker
+          scenarios={allScenarios}
+          onSelect={handleSelectScenario}
+        />
+      )}
+
+      {/* Toolbar scenario picker */}
+      {!showWelcome && showPicker && (
+        <ScenarioPicker
+          scenarios={allScenarios}
+          onSelect={handleSelectScenario}
+          onClose={() => setShowPicker(false)}
+        />
+      )}
+
+      {/* Onboarding tooltips */}
+      {onboardingStep !== null && (
+        <OnboardingTooltip
+          key={onboardingStep}
+          step={onboardingStep}
+          onNext={handleOnboardingNext}
+          onSkip={handleOnboardingSkip}
+        />
+      )}
+    </div>
+  </>
   );
 }
 
