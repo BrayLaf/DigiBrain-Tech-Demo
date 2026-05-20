@@ -3,6 +3,7 @@ import {
   ReactFlow,
   useNodesState,
   useEdgesState,
+  useReactFlow,
   Background,
   Controls,
   type Node,
@@ -33,6 +34,18 @@ const nodeTypes = {
 interface GraphCanvasProps {
   onNodeClick?: (nodeId: string) => void;
   onPaneClick?: () => void;
+  searchQuery?: string;
+  focusTarget?: { id: string; ts: number } | null;
+}
+
+// Rendered inside <ReactFlow> so it can access the React Flow context via useReactFlow.
+function FitViewTrigger({ target }: { target: { id: string; ts: number } | null | undefined }) {
+  const { fitView } = useReactFlow();
+  useEffect(() => {
+    if (!target) return;
+    fitView({ nodes: [{ id: target.id }], duration: 600, padding: 0.8, maxZoom: 1.5 });
+  }, [target, fitView]);
+  return null;
 }
 
 interface EdgeLabelEdit {
@@ -42,7 +55,7 @@ interface EdgeLabelEdit {
   y: number;
 }
 
-export default function GraphCanvas({ onNodeClick, onPaneClick }: GraphCanvasProps) {
+export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = '', focusTarget }: GraphCanvasProps) {
   const brainNodes = useGraphStore((s) => s.nodes);
   const brainEdges = useGraphStore((s) => s.edges);
   const updateNode = useGraphStore((s) => s.updateNode);
@@ -56,15 +69,29 @@ export default function GraphCanvas({ onNodeClick, onPaneClick }: GraphCanvasPro
   const edgeEditCancelled = useRef(false);
 
   useEffect(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const matchedIds = q.length > 0
+      ? new Set(
+          brainNodes
+            .filter((n) =>
+              n.title.toLowerCase().includes(q) ||
+              n.content.toLowerCase().includes(q),
+            )
+            .map((n) => n.id),
+        )
+      : null;
+
     setNodes(
       brainNodes.map((n) => ({
         id: n.id,
         type: n.type,
         position: n.position,
         data: n,
+        style: matchedIds && !matchedIds.has(n.id) ? { opacity: 0.3 } : undefined,
+        className: matchedIds?.has(n.id) ? 'search-highlight' : undefined,
       })),
     );
-  }, [brainNodes, setNodes]);
+  }, [brainNodes, searchQuery, setNodes]);
 
   useEffect(() => {
     setEdges(
@@ -146,6 +173,7 @@ export default function GraphCanvas({ onNodeClick, onPaneClick }: GraphCanvasPro
       >
         <Background />
         <Controls />
+        <FitViewTrigger target={focusTarget} />
       </ReactFlow>
 
       {editingEdge && (
