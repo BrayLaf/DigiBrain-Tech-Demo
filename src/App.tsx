@@ -3,11 +3,12 @@ import AppHeader from './AppHeader';
 import GraphCanvas from './graph/GraphCanvas';
 import NodePanel from './panel/NodePanel';
 import MiniPanel from './panel/MiniPanel';
+import SearchBar from './graph/SearchBar';
+import { useGraphStore } from './store/graphStore';
 import ScenarioPicker from './demo/ScenarioPicker';
 import OnboardingTooltip from './onboarding/OnboardingTooltip';
 import { allScenarios } from './store/seedData';
 import type { Scenario } from './store/seedData';
-import { useGraphStore } from './store/graphStore';
 
 const ONBOARDING_KEY = 'digibrain_onboarding_done';
 
@@ -19,6 +20,14 @@ type EditPanel =
 function App() {
   const [detailNodeId, setDetailNodeId] = useState<string | null>(null);
   const [editPanel, setEditPanel] = useState<EditPanel>({ open: false });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [focusTarget, setFocusTarget] = useState<{ id: string; ts: number } | null>(null);
+
+  const brainNodes = useGraphStore((s) => s.nodes);
+
+  function handleFocusNode(id: string) {
+    setFocusTarget({ id, ts: Date.now() });
+  }
   const [showWelcome, setShowWelcome] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState<number | null>(null);
@@ -86,6 +95,8 @@ function App() {
       <GraphCanvas
         onNodeClick={(id) => { setEditPanel({ open: false }); setDetailNodeId(id); }}
         onPaneClick={closeAll}
+        searchQuery={searchQuery}
+        focusTarget={focusTarget}
       />
       <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10, display: 'flex', gap: 8 }}>
         <button
@@ -106,6 +117,14 @@ function App() {
         >
           Reset demo
         </button>
+      </div>
+      <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
+        <SearchBar
+          nodes={brainNodes}
+          query={searchQuery}
+          onQueryChange={setSearchQuery}
+          onFocusNode={handleFocusNode}
+        />
       </div>
 
       {detailNodeId && (

@@ -157,6 +157,15 @@
   color: var(--node-memory-icon);
 }
 
+/* ── Search highlight & dim ─────────────────────────────────── */
+.react-flow__node {
+  transition: opacity 0.2s ease;
+}
+
+.react-flow__node.search-highlight .brain-node {
+  box-shadow: 0 0 0 2.5px var(--accent);
+}
+
 /* ── MessageNode ────────────────────────────────────────────── */
 .brain-node--message {
   width: 200px;
