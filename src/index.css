@@ -182,6 +182,42 @@ p {
   font-family: var(--sans);
 }
 
+/* ── Layout mode toggle ──────────────────────────────────────── */
+.layout-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.layout-toggle__btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: var(--sans);
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.12s, color 0.12s;
+  line-height: 1;
+}
+
+.layout-toggle__btn + .layout-toggle__btn {
+  border-left: 1px solid var(--border);
+}
+
+.layout-toggle__btn--active {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.layout-toggle__btn:not(.layout-toggle__btn--active):hover {
+  background: var(--border);
+  color: var(--text-h);
+}
+
 code,
 .counter {
   font-family: var(--mono);

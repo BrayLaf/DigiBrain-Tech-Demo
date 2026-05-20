@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AppHeader from './AppHeader';
 import GraphCanvas from './graph/GraphCanvas';
 import NodePanel from './panel/NodePanel';
 import MiniPanel from './panel/MiniPanel';
 import SearchBar from './graph/SearchBar';
 import { useGraphStore } from './store/graphStore';
+import { applyDagreLayout, graphTopologyKey } from './graph/layout';
 import ScenarioPicker from './demo/ScenarioPicker';
 import OnboardingTooltip from './onboarding/OnboardingTooltip';
 import { allScenarios } from './store/seedData';
@@ -22,12 +23,38 @@ function App() {
   const [editPanel, setEditPanel] = useState<EditPanel>({ open: false });
   const [searchQuery, setSearchQuery] = useState('');
   const [focusTarget, setFocusTarget] = useState<{ id: string; ts: number } | null>(null);
+  const [layoutMode, setLayoutMode] = useState<'free' | 'auto'>('free');
+  const autoLayoutKeyRef = useRef<string>('');
 
   const brainNodes = useGraphStore((s) => s.nodes);
+  const brainEdges = useGraphStore((s) => s.edges);
+  const batchUpdatePositions = useGraphStore((s) => s.batchUpdatePositions);
 
   function handleFocusNode(id: string) {
     setFocusTarget({ id, ts: Date.now() });
   }
+
+  function handleLayoutToggle() {
+    if (layoutMode === 'free') {
+      autoLayoutKeyRef.current = ''; // ensure dagre runs immediately on switch
+      setLayoutMode('auto');
+    } else {
+      setLayoutMode('free');
+    }
+  }
+
+  // Re-run dagre whenever graph topology changes while in Auto mode.
+  useEffect(() => {
+    if (layoutMode !== 'auto' || brainNodes.length === 0) return;
+    const key = graphTopologyKey(brainNodes, brainEdges);
+    if (key === autoLayoutKeyRef.current) return;
+    autoLayoutKeyRef.current = key;
+    const laid = applyDagreLayout(brainNodes, brainEdges);
+    const posMap: Record<string, { x: number; y: number }> = {};
+    for (const n of laid) posMap[n.id] = n.position;
+    batchUpdatePositions(posMap);
+  }, [layoutMode, brainNodes, brainEdges, batchUpdatePositions]);
+
   const [showWelcome, setShowWelcome] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState<number | null>(null);
@@ -97,6 +124,7 @@ function App() {
         onPaneClick={closeAll}
         searchQuery={searchQuery}
         focusTarget={focusTarget}
+        layoutMode={layoutMode}
       />
       <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10, display: 'flex', gap: 8 }}>
         <button
@@ -117,6 +145,20 @@ function App() {
         >
           Reset demo
         </button>
+        <div className="layout-toggle">
+          <button
+            className={`layout-toggle__btn${layoutMode === 'free' ? ' layout-toggle__btn--active' : ''}`}
+            onClick={() => layoutMode !== 'free' && handleLayoutToggle()}
+          >
+            Free
+          </button>
+          <button
+            className={`layout-toggle__btn${layoutMode === 'auto' ? ' layout-toggle__btn--active' : ''}`}
+            onClick={() => layoutMode !== 'auto' && handleLayoutToggle()}
+          >
+            Auto
+          </button>
+        </div>
       </div>
       <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
         <SearchBar
