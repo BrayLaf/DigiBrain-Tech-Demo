@@ -36,6 +36,7 @@ interface GraphCanvasProps {
   onPaneClick?: () => void;
   searchQuery?: string;
   focusTarget?: { id: string; ts: number } | null;
+  layoutMode?: 'free' | 'auto';
 }
 
 // Rendered inside <ReactFlow> so it can access the React Flow context via useReactFlow.
@@ -55,7 +56,7 @@ interface EdgeLabelEdit {
   y: number;
 }
 
-export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = '', focusTarget }: GraphCanvasProps) {
+export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = '', focusTarget, layoutMode = 'free' }: GraphCanvasProps) {
   const brainNodes = useGraphStore((s) => s.nodes);
   const brainEdges = useGraphStore((s) => s.edges);
   const updateNode = useGraphStore((s) => s.updateNode);
@@ -168,6 +169,8 @@ export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = ''
         onEdgeDoubleClick={onEdgeDoubleClick}
         nodeTypes={nodeTypes}
         deleteKeyCode={['Backspace', 'Delete']}
+        nodesDraggable={layoutMode !== 'auto'}
+        className={layoutMode === 'auto' ? 'layout-auto' : undefined}
         minZoom={0.05}
         fitView
       >

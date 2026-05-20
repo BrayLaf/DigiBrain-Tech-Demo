@@ -12,6 +12,7 @@ interface GraphState {
   removeEdge: (id: string) => void;
   removeEdges: (ids: string[]) => void;
   setGraph: (nodes: BrainNode[], edges: BrainEdge[]) => void;
+  batchUpdatePositions: (positions: Record<string, { x: number; y: number }>) => void;
 }
 
 export const useGraphStore = create<GraphState>((set) => ({
@@ -49,4 +50,11 @@ export const useGraphStore = create<GraphState>((set) => ({
   },
 
   setGraph: (nodes, edges) => set(() => ({ nodes, edges })),
+
+  batchUpdatePositions: (positions) =>
+    set((state) => ({
+      nodes: state.nodes.map((n) =>
+        positions[n.id] ? { ...n, position: positions[n.id] } : n,
+      ),
+    })),
 }));

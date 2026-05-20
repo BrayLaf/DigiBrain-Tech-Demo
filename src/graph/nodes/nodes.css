@@ -166,6 +166,11 @@
   box-shadow: 0 0 0 2.5px var(--accent);
 }
 
+/* ── Auto-layout animation ──────────────────────────────────── */
+.layout-auto .react-flow__node {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+
 /* ── MessageNode ────────────────────────────────────────────── */
 .brain-node--message {
   width: 200px;
