@@ -12,9 +12,10 @@ import {
   type Connection,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import './nodes/nodes.css';
 import { useGraphStore } from '../store/graphStore';
 import { genId } from '../utils/id';
-import type { BrainNode } from '../types/graph';
+import type { BrainNodeData } from '../types/graph';
 import DocumentNode from './nodes/DocumentNode';
 import TopicNode from './nodes/TopicNode';
 import TagNode from './nodes/TagNode';
@@ -30,6 +31,12 @@ const nodeTypes = {
   memory: MemoryNode,
   message: MessageNode,
 };
+
+// Module-scope constant so React Flow's shallow style comparison can bail out correctly.
+const DIMMED_STYLE = { opacity: 0.3 } as const;
+
+// Empty registry at module scope — drop custom edge types in here when needed.
+const edgeTypes = {};
 
 interface GraphCanvasProps {
   onNodeClick?: (nodeId: string) => void;
@@ -64,7 +71,7 @@ export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = ''
   const storeUpdateEdge = useGraphStore((s) => s.updateEdge);
   const storeRemoveEdges = useGraphStore((s) => s.removeEdges);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node<BrainNode>>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<BrainNodeData>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [editingEdge, setEditingEdge] = useState<EdgeLabelEdit | null>(null);
   const edgeEditCancelled = useRef(false);
@@ -87,8 +94,9 @@ export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = ''
         id: n.id,
         type: n.type,
         position: n.position,
-        data: n,
-        style: matchedIds && !matchedIds.has(n.id) ? { opacity: 0.3 } : undefined,
+        // Only pass the presentational subset — avoids id/position duplication on node.data
+        data: { title: n.title, content: n.content, tags: n.tags },
+        style: matchedIds && !matchedIds.has(n.id) ? DIMMED_STYLE : undefined,
         className: matchedIds?.has(n.id) ? 'search-highlight' : undefined,
       })),
     );
@@ -129,14 +137,14 @@ export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = ''
   );
 
   const onNodeDragStop = useCallback(
-    (_event: React.MouseEvent, node: Node<BrainNode>) => {
+    (_event: React.MouseEvent, node: Node<BrainNodeData>) => {
       updateNode(node.id, { position: node.position });
     },
     [updateNode],
   );
 
   const handleNodeClick = useCallback(
-    (_: React.MouseEvent, node: Node<BrainNode>) => {
+    (_: React.MouseEvent, node: Node<BrainNodeData>) => {
       onNodeClick?.(node.id);
     },
     [onNodeClick],
@@ -168,6 +176,7 @@ export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = ''
         onPaneClick={onPaneClick}
         onEdgeDoubleClick={onEdgeDoubleClick}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         deleteKeyCode={['Backspace', 'Delete']}
         nodesDraggable={layoutMode !== 'auto'}
         className={layoutMode === 'auto' ? 'layout-auto' : undefined}

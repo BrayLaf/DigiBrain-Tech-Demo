@@ -59,7 +59,6 @@ function App() {
   const [showPicker, setShowPicker] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState<number | null>(null);
 
-  const nodes = useGraphStore((s) => s.nodes);
   const setGraph = useGraphStore((s) => s.setGraph);
 
   function openEdit(nodeId: string) {
@@ -74,7 +73,7 @@ function App() {
 
   function handleSelectScenario(scenario: Scenario) {
     // Confirmation only from toolbar picker (not welcome), when graph has nodes
-    if (!showWelcome && nodes.length > 0) {
+    if (!showWelcome && brainNodes.length > 0) {
       const ok = window.confirm(`Replace the current graph with the "${scenario.name}" scenario?`);
       if (!ok) return;
     }
@@ -103,7 +102,7 @@ function App() {
   }
 
   function handleResetDemo() {
-    if (nodes.length > 0) {
+    if (brainNodes.length > 0) {
       const ok = window.confirm('Reset and clear your current graph?');
       if (!ok) return;
     }
@@ -148,13 +147,15 @@ function App() {
         <div className="layout-toggle">
           <button
             className={`layout-toggle__btn${layoutMode === 'free' ? ' layout-toggle__btn--active' : ''}`}
-            onClick={() => layoutMode !== 'free' && handleLayoutToggle()}
+            onClick={handleLayoutToggle}
+            disabled={layoutMode === 'free'}
           >
             Free
           </button>
           <button
             className={`layout-toggle__btn${layoutMode === 'auto' ? ' layout-toggle__btn--active' : ''}`}
-            onClick={() => layoutMode !== 'auto' && handleLayoutToggle()}
+            onClick={handleLayoutToggle}
+            disabled={layoutMode === 'auto'}
           >
             Auto
           </button>

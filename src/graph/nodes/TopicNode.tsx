@@ -1,12 +1,12 @@
+import { memo } from 'react';
 import { Handle, Position, type Node, type NodeProps } from '@xyflow/react';
-import type { BrainNode } from '../../types/graph';
+import type { BrainNodeData } from '../../types/graph';
 import MiniNodeBody from './MiniNodeBody';
 import { useLOD } from './useLOD';
-import './nodes.css';
 
-type TopicNodeType = Node<BrainNode, 'topic'>;
+type TopicNodeType = Node<BrainNodeData, 'topic'>;
 
-export default function TopicNode({ data, selected, isConnectable }: NodeProps<TopicNodeType>) {
+function TopicNode({ data, selected, isConnectable }: NodeProps<TopicNodeType>) {
   const mini = useLOD();
   return (
     <>
@@ -45,3 +45,5 @@ export default function TopicNode({ data, selected, isConnectable }: NodeProps<T
     </>
   );
 }
+
+export default memo(TopicNode);

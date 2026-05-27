@@ -27,7 +27,9 @@ interface OnboardingTooltipProps {
 }
 
 export default function OnboardingTooltip({ step, onNext, onSkip }: OnboardingTooltipProps) {
-  const { text, position } = STEPS[step];
+  const currentStep = STEPS[step];
+  if (!currentStep) return null;
+  const { text, position } = currentStep;
   const isLast = step === STEPS.length - 1;
 
   return (

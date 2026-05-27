@@ -1,12 +1,12 @@
+import { memo } from 'react';
 import { Handle, Position, type Node, type NodeProps } from '@xyflow/react';
-import type { BrainNode } from '../../types/graph';
+import type { BrainNodeData } from '../../types/graph';
 import MiniNodeBody from './MiniNodeBody';
 import { useLOD } from './useLOD';
-import './nodes.css';
 
-type MessageNodeType = Node<BrainNode, 'message'>;
+type MessageNodeType = Node<BrainNodeData, 'message'>;
 
-export default function MessageNode({ data, selected, isConnectable }: NodeProps<MessageNodeType>) {
+function MessageNode({ data, selected, isConnectable }: NodeProps<MessageNodeType>) {
   const mini = useLOD();
   return (
     <>
@@ -38,3 +38,5 @@ export default function MessageNode({ data, selected, isConnectable }: NodeProps
     </>
   );
 }
+
+export default memo(MessageNode);
