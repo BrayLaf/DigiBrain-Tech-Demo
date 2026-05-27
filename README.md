@@ -2,6 +2,8 @@
 
 A single-page interactive proof of concept for Digibrain's core mechanic: visualizing knowledge as a connected graph.
 
+[Live Demo](https://digibrain-tech-demo.vercel.app/)
+
 ## What it does
 
 Choose a pre-built scenario (or start blank) and explore an interactive knowledge graph. You can:
