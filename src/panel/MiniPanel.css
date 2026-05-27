@@ -1,9 +1,9 @@
 .mini-panel {
   position: fixed;
-  top: 0;
+  top: var(--header-h);
   right: 0;
   width: 400px;
-  height: 100%;
+  height: calc(100dvh - var(--header-h));
   background: var(--bg);
   border-left: 1.5px solid var(--border);
   box-shadow: -8px 0 40px rgba(0, 0, 0, 0.1);
@@ -11,6 +11,14 @@
   flex-direction: column;
   z-index: 100;
   animation: mini-panel-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 480px) {
+  .mini-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1.5px solid var(--border);
+  }
 }
 
 @keyframes mini-panel-in {

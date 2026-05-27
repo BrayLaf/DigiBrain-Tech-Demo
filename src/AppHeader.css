@@ -2,15 +2,20 @@
 .app-header {
   display: flex;
   align-items: center;
-  height: 48px;
-  padding: 0 20px;
+  height: var(--header-h);
+  padding: 0 16px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   box-sizing: border-box;
-  gap: 16px;
+  gap: 12px;
+  /* allow search dropdown to overflow the header */
+  overflow: visible;
+  position: relative;
+  z-index: 50;
 }
 
+/* ── Brand ───────────────────────────────────────────────────── */
 .app-header__brand {
   display: flex;
   align-items: baseline;
@@ -22,15 +27,94 @@
   font-size: 15px;
   font-weight: 700;
   color: var(--text-h);
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
   line-height: 1;
 }
 
 .app-header__sub {
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0;
   line-height: 1;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────── */
+.app-header__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.app-header__search {
+  flex-shrink: 0;
+}
+
+.app-header__divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+/* ── Toolbar buttons ─────────────────────────────────────────── */
+.toolbar-btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: var(--sans);
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.12s, border-color 0.12s, color 0.12s, opacity 0.12s;
+  line-height: 1.4;
+}
+
+.toolbar-btn:hover {
+  background: var(--border);
+  color: var(--text-h);
+}
+
+.toolbar-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.toolbar-btn--primary:hover {
+  opacity: 0.85;
+  background: var(--accent);
+  color: #fff;
+}
+
+.toolbar-btn--danger {
+  color: #DC2626;
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.toolbar-btn--danger:hover {
+  background: rgba(220, 38, 38, 0.07);
+  border-color: rgba(220, 38, 38, 0.5);
+  color: #DC2626;
+}
+
+/* ── Right meta area ─────────────────────────────────────────── */
+.app-header__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .app-header__privacy {
@@ -38,26 +122,24 @@
   align-items: center;
   gap: 5px;
   color: var(--text);
-  font-size: 12px;
-  flex: 1;
-  justify-content: center;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .app-header__team {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+  gap: 6px;
 }
 
 .app-header__team-label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text);
   white-space: nowrap;
 }
 
 .app-header__link {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--accent);
   text-decoration: none;
   white-space: nowrap;
@@ -69,53 +151,79 @@
   text-decoration: underline;
 }
 
-/* ── Mobile (≤ 768px) ────────────────────────────────────────── */
+/* ── Tablet (≤1100px): hide team credits ─────────────────────── */
+@media (max-width: 1100px) {
+  .app-header__team {
+    display: none;
+  }
+}
+
+/* ── Tablet (≤900px): shorten some labels ───────────────────── */
+@media (max-width: 900px) {
+  .app-header__privacy span {
+    display: none;
+  }
+
+  .app-header__privacy {
+    gap: 0;
+  }
+}
+
+/* ── Mobile (≤768px): 2-row layout ──────────────────────────── */
 @media (max-width: 768px) {
   .app-header {
     height: auto;
-    padding: 6px 14px 7px;
     flex-wrap: wrap;
-    align-items: center;
+    padding: 8px 12px 0;
     gap: 0;
+    align-items: center;
   }
 
-  /* Row 1: brand left, privacy right */
+  /* Row 1: Brand (left) + Privacy (right) */
   .app-header__brand {
     flex: 1 1 auto;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1px;
+    margin-bottom: 8px;
+  }
+
+  .app-header__meta {
+    flex: 0 0 auto;
+    margin-bottom: 8px;
+  }
+
+  /* Row 2: Toolbar (full width, scrollable) */
+  .app-header__toolbar {
+    flex: 0 0 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    gap: 5px;
+  }
+
+  .app-header__toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Search in toolbar is hidden on mobile — floating overlay used instead */
+  .app-header__search {
+    display: none;
+  }
+
+  /* Remove dividers that no longer make sense without the search */
+  .app-header__divider:first-of-type {
+    display: none;
+  }
+
+  .toolbar-btn {
+    padding: 5px 10px;
+    font-size: 11px;
   }
 
   .app-header__name {
     font-size: 14px;
-    line-height: 1.2;
   }
 
   .app-header__sub {
     font-size: 10px;
-    line-height: 1.2;
-  }
-
-  .app-header__privacy {
-    flex: 0 0 auto;
-    font-size: 11px;
-    gap: 4px;
-    justify-content: flex-end;
-  }
-
-  /* Row 2: team spans full width, centered */
-  .app-header__team {
-    flex: 0 0 100%;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 4px;
-    padding-top: 4px;
-    border-top: 1px solid var(--border);
-  }
-
-  .app-header__team-label,
-  .app-header__link {
-    font-size: 11px;
   }
 }

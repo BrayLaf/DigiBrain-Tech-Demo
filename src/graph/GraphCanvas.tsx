@@ -44,15 +44,28 @@ interface GraphCanvasProps {
   searchQuery?: string;
   focusTarget?: { id: string; ts: number } | null;
   layoutMode?: 'free' | 'auto';
+  fitAllTrigger?: number;
 }
 
-// Rendered inside <ReactFlow> so it can access the React Flow context via useReactFlow.
+// Rendered inside <ReactFlow> — fits view to a single focused node.
 function FitViewTrigger({ target }: { target: { id: string; ts: number } | null | undefined }) {
   const { fitView } = useReactFlow();
   useEffect(() => {
     if (!target) return;
     fitView({ nodes: [{ id: target.id }], duration: 600, padding: 0.8, maxZoom: 1.5 });
   }, [target, fitView]);
+  return null;
+}
+
+// Rendered inside <ReactFlow> — fits view to all nodes when trigger increments.
+function FitAllTrigger({ trigger }: { trigger: number }) {
+  const { fitView } = useReactFlow();
+  const prevRef = useRef(trigger);
+  useEffect(() => {
+    if (trigger === prevRef.current) return;
+    prevRef.current = trigger;
+    fitView({ duration: 600, padding: 0.12 });
+  }, [trigger, fitView]);
   return null;
 }
 
@@ -63,7 +76,7 @@ interface EdgeLabelEdit {
   y: number;
 }
 
-export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = '', focusTarget, layoutMode = 'free' }: GraphCanvasProps) {
+export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = '', focusTarget, layoutMode = 'free', fitAllTrigger = 0 }: GraphCanvasProps) {
   const brainNodes = useGraphStore((s) => s.nodes);
   const brainEdges = useGraphStore((s) => s.edges);
   const updateNode = useGraphStore((s) => s.updateNode);
@@ -186,6 +199,7 @@ export default function GraphCanvas({ onNodeClick, onPaneClick, searchQuery = ''
         <Background />
         <Controls />
         <FitViewTrigger target={focusTarget} />
+        <FitAllTrigger trigger={fitAllTrigger} />
       </ReactFlow>
 
       {editingEdge && (

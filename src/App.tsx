@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import AppHeader from './AppHeader';
 import GraphCanvas from './graph/GraphCanvas';
+import SearchBar from './graph/SearchBar';
 import NodePanel from './panel/NodePanel';
 import MiniPanel from './panel/MiniPanel';
-import SearchBar from './graph/SearchBar';
 import { useGraphStore } from './store/graphStore';
 import { applyDagreLayout, graphTopologyKey } from './graph/layout';
 import ScenarioPicker from './demo/ScenarioPicker';
@@ -24,6 +24,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [focusTarget, setFocusTarget] = useState<{ id: string; ts: number } | null>(null);
   const [layoutMode, setLayoutMode] = useState<'free' | 'auto'>('free');
+  const [fitAllTrigger, setFitAllTrigger] = useState(0);
   const autoLayoutKeyRef = useRef<string>('');
 
   const brainNodes = useGraphStore((s) => s.nodes);
@@ -36,14 +37,18 @@ function App() {
 
   function handleLayoutToggle() {
     if (layoutMode === 'free') {
-      autoLayoutKeyRef.current = ''; // ensure dagre runs immediately on switch
+      autoLayoutKeyRef.current = '';
       setLayoutMode('auto');
     } else {
       setLayoutMode('free');
     }
   }
 
-  // Re-run dagre whenever graph topology changes while in Auto mode.
+  function handleFitView() {
+    setFitAllTrigger((n) => n + 1);
+  }
+
+  // Re-run dagre whenever graph topology changes in Auto mode.
   useEffect(() => {
     if (layoutMode !== 'auto' || brainNodes.length === 0) return;
     const key = graphTopologyKey(brainNodes, brainEdges);
@@ -71,8 +76,12 @@ function App() {
     setEditPanel({ open: false });
   }
 
+  function handleAddNode() {
+    setDetailNodeId(null);
+    setEditPanel({ open: true, mode: 'create' });
+  }
+
   function handleSelectScenario(scenario: Scenario) {
-    // Confirmation only from toolbar picker (not welcome), when graph has nodes
     if (!showWelcome && brainNodes.length > 0) {
       const ok = window.confirm(`Replace the current graph with the "${scenario.name}" scenario?`);
       if (!ok) return;
@@ -114,109 +123,114 @@ function App() {
     closeAll();
   }
 
+  function handleLoadScenarios() {
+    setShowPicker(true);
+  }
+
+  const showEmptyState = brainNodes.length === 0 && !showWelcome && !showPicker;
+
   return (
-  <>
-    <AppHeader />
-    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-      <GraphCanvas
-        onNodeClick={(id) => { setEditPanel({ open: false }); setDetailNodeId(id); }}
-        onPaneClick={closeAll}
+    <>
+      <AppHeader
+        nodes={brainNodes}
         searchQuery={searchQuery}
-        focusTarget={focusTarget}
+        onQueryChange={setSearchQuery}
+        onFocusNode={handleFocusNode}
         layoutMode={layoutMode}
+        onLayoutToggle={handleLayoutToggle}
+        onAddNode={handleAddNode}
+        onFitView={handleFitView}
+        onLoadScenarios={handleLoadScenarios}
+        onResetDemo={handleResetDemo}
       />
-      <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 10, display: 'flex', gap: 8 }}>
-        <button
-          onClick={() => { setDetailNodeId(null); setEditPanel({ open: true, mode: 'create' }); }}
-          style={{ padding: '6px 14px', cursor: 'pointer' }}
-        >
-          Add Node
-        </button>
-        <button
-          onClick={() => setShowPicker(true)}
-          style={{ padding: '6px 14px', cursor: 'pointer' }}
-        >
-          Demo scenarios
-        </button>
-        <button
-          onClick={handleResetDemo}
-          style={{ padding: '6px 14px', cursor: 'pointer' }}
-        >
-          Reset demo
-        </button>
-        <div className="layout-toggle">
-          <button
-            className={`layout-toggle__btn${layoutMode === 'free' ? ' layout-toggle__btn--active' : ''}`}
-            onClick={handleLayoutToggle}
-            disabled={layoutMode === 'free'}
-          >
-            Free
-          </button>
-          <button
-            className={`layout-toggle__btn${layoutMode === 'auto' ? ' layout-toggle__btn--active' : ''}`}
-            onClick={handleLayoutToggle}
-            disabled={layoutMode === 'auto'}
-          >
-            Auto
-          </button>
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+        <GraphCanvas
+          onNodeClick={(id) => { setEditPanel({ open: false }); setDetailNodeId(id); }}
+          onPaneClick={closeAll}
+          searchQuery={searchQuery}
+          focusTarget={focusTarget}
+          layoutMode={layoutMode}
+          fitAllTrigger={fitAllTrigger}
+        />
+
+        {/* Mobile: floating search (hidden on desktop via CSS) */}
+        <div className="search-overlay">
+          <SearchBar
+            nodes={brainNodes}
+            query={searchQuery}
+            onQueryChange={setSearchQuery}
+            onFocusNode={handleFocusNode}
+          />
         </div>
+
+        {/* Empty graph state */}
+        {showEmptyState && (
+          <div className="empty-state">
+            <div className="empty-state__card">
+              <div className="empty-state__icon" aria-hidden="true">🧠</div>
+              <h2 className="empty-state__title">Your Digital Brain is empty</h2>
+              <p className="empty-state__desc">
+                Add a node to start building your knowledge graph, or load a demo scenario to explore what's possible.
+              </p>
+              <div className="empty-state__actions">
+                <button className="empty-state__btn empty-state__btn--primary" onClick={handleAddNode}>
+                  Add Node
+                </button>
+                <button className="empty-state__btn empty-state__btn--ghost" onClick={handleLoadScenarios}>
+                  Load Demo
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {detailNodeId && (
+          <MiniPanel
+            key={detailNodeId}
+            nodeId={detailNodeId}
+            onClose={() => setDetailNodeId(null)}
+            onEdit={openEdit}
+            onSelectNode={(id) => setDetailNodeId(id)}
+          />
+        )}
+
+        {editPanel.open && (
+          <NodePanel
+            key={editPanel.mode === 'edit' ? editPanel.nodeId : 'create'}
+            mode={editPanel.mode}
+            nodeId={editPanel.mode === 'edit' ? editPanel.nodeId : undefined}
+            onClose={() => setEditPanel({ open: false })}
+          />
+        )}
+
+        {/* Welcome screen — shown on first load */}
+        {showWelcome && (
+          <ScenarioPicker
+            scenarios={allScenarios}
+            onSelect={handleSelectScenario}
+          />
+        )}
+
+        {/* Toolbar scenario picker */}
+        {!showWelcome && showPicker && (
+          <ScenarioPicker
+            scenarios={allScenarios}
+            onSelect={handleSelectScenario}
+            onClose={() => setShowPicker(false)}
+          />
+        )}
+
+        {/* Onboarding tooltips */}
+        {onboardingStep !== null && (
+          <OnboardingTooltip
+            key={onboardingStep}
+            step={onboardingStep}
+            onNext={handleOnboardingNext}
+            onSkip={handleOnboardingSkip}
+          />
+        )}
       </div>
-      <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
-        <SearchBar
-          nodes={brainNodes}
-          query={searchQuery}
-          onQueryChange={setSearchQuery}
-          onFocusNode={handleFocusNode}
-        />
-      </div>
-
-      {detailNodeId && (
-        <MiniPanel
-          key={detailNodeId}
-          nodeId={detailNodeId}
-          onClose={() => setDetailNodeId(null)}
-          onEdit={openEdit}
-          onSelectNode={(id) => setDetailNodeId(id)}
-        />
-      )}
-
-      {editPanel.open && (
-        <NodePanel
-          key={editPanel.mode === 'edit' ? editPanel.nodeId : 'create'}
-          mode={editPanel.mode}
-          nodeId={editPanel.mode === 'edit' ? editPanel.nodeId : undefined}
-          onClose={() => setEditPanel({ open: false })}
-        />
-      )}
-
-      {/* Welcome screen — shown on first load, forced pick */}
-      {showWelcome && (
-        <ScenarioPicker
-          scenarios={allScenarios}
-          onSelect={handleSelectScenario}
-        />
-      )}
-
-      {/* Toolbar scenario picker */}
-      {!showWelcome && showPicker && (
-        <ScenarioPicker
-          scenarios={allScenarios}
-          onSelect={handleSelectScenario}
-          onClose={() => setShowPicker(false)}
-        />
-      )}
-
-      {/* Onboarding tooltips */}
-      {onboardingStep !== null && (
-        <OnboardingTooltip
-          key={onboardingStep}
-          step={onboardingStep}
-          onNext={handleOnboardingNext}
-          onSkip={handleOnboardingSkip}
-        />
-      )}
-    </div>
-  </>
+    </>
   );
 }
 
