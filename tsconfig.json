@@ -9,10 +9,7 @@
   "paths": {
     "@/*": ["src/*"],
     "@graph/*": ["src/graph/*"],
-    "@ui/*": ["src/ui/*"],
-    "@store/*": ["src/store/*"],
-    "@types/*": ["src/types/*"],
-    "@ai/*": ["src/ai/*"]
+    "@store/*": ["src/store/*"]
   }
- } 
+ }
 }

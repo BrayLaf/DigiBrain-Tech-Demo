@@ -8,15 +8,12 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@ai': path.resolve(__dirname, './src/ai'),
-      '@ui': path.resolve(__dirname, './src/ui'),
       '@store': path.resolve(__dirname, './src/store'),
-      '@types': path.resolve(__dirname, './src/types'),
       '@graph': path.resolve(__dirname, './src/graph'),
     },
   },
   server: {
-    host: '0.0.0.0',
+    host: 'localhost',
     port: 5173,
   },
 });
