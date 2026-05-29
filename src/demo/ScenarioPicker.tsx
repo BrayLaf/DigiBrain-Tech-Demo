@@ -30,7 +30,7 @@ export default function ScenarioPicker({ scenarios, onSelect, onClose }: Scenari
       <div className={`sp-panel${isWelcome ? ' sp-panel--welcome' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="sp-header">
           <h2 id="sp-title" className="sp-title">
-            {isWelcome ? 'Welcome to DigiBrain' : 'Demo Scenarios'}
+            {isWelcome ? 'Welcome to Kaika' : 'Demo Scenarios'}
           </h2>
           {!isWelcome && (
             <button className="sp-close" onClick={onClose} aria-label="Close">✕</button>

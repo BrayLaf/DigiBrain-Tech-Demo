@@ -77,13 +77,13 @@ const studentEdges: BrainEdge[] = [
   { id: 's2-e14', source: 's2-intern',   target: 's2-sam',      label: 'next step' },
 ];
 
-// ── Scenario 3: Digibrain Team Brain ──────────────────────────
+// ── Scenario 3: Kaika Team Brain ──────────────────────────────
 const teamNodes: BrainNode[] = [
   { id: 's3-braydon',    type: 'person',   title: 'Braydon',                                      content: 'Owns backend direction, infrastructure, and demo narrative.', tags: [], createdAt: NOW, position: { x: 40,  y: 160 } },
   { id: 's3-shogo',      type: 'person',   title: 'Shogo',                                        content: 'Owns frontend polish, product feel, and user-facing flows.', tags: [], createdAt: NOW, position: { x: 40,  y: 400 } },
   { id: 's3-product',    type: 'topic',    title: 'Personal Knowledge Graphs',                    content: '', tags: [], createdAt: NOW, position: { x: 310, y: 110 } },
   { id: 's3-demo-topic', type: 'topic',    title: 'Tech Demo Experience',                         content: '', tags: [], createdAt: NOW, position: { x: 310, y: 350 } },
-  { id: 's3-vision',     type: 'document', title: 'Digibrain — Product Vision',                   content: 'Documents become linked concepts, decisions, people, memories, and follow-ups.', tags: ['strategy'], createdAt: NOW, position: { x: 620, y: 30  } },
+  { id: 's3-vision',     type: 'document', title: 'Kaika — Product Vision',                       content: 'Documents become linked concepts, decisions, people, memories, and follow-ups.', tags: ['strategy'], createdAt: NOW, position: { x: 620, y: 30  } },
   { id: 's3-demo',       type: 'document', title: 'Tech Demo Sprint 1',                           content: 'Scenario picker, editable nodes, edge labels, onboarding, and graph examples.', tags: ['demo'], createdAt: NOW, position: { x: 630, y: 220 } },
   { id: 's3-arch',       type: 'document', title: 'Full App Architecture (NestJS + Neo4j)',        content: 'Future backend plan for persistence, graph queries, and ingestion pipelines.', tags: ['architecture'], createdAt: NOW, position: { x: 630, y: 420 } },
   { id: 's3-memory',     type: 'memory',   title: 'Networking Event Insight',                     content: 'The strongest pitch is showing one document split into people, topics, memories, and next actions.', tags: [], createdAt: NOW, position: { x: 960, y: 130 } },

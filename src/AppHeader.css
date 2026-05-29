@@ -23,11 +23,16 @@
   flex-shrink: 0;
 }
 
+.app-header__logo {
+  display: block;
+  flex-shrink: 0;
+}
+
 .app-header__name {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-h);
-  letter-spacing: -0.4px;
+  letter-spacing: 0.04em;
   line-height: 1;
 }
 

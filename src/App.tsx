@@ -11,7 +11,7 @@ import OnboardingTooltip from './onboarding/OnboardingTooltip';
 import { allScenarios } from './store/seedData';
 import type { Scenario } from './store/seedData';
 
-const ONBOARDING_KEY = 'digibrain_onboarding_done';
+const ONBOARDING_KEY = 'kaika_onboarding_done';
 
 type EditPanel =
   | { open: false }

@@ -48,7 +48,8 @@ export default function AppHeader({
     <header className="app-header">
       {/* ── Brand ── */}
       <div className="app-header__brand">
-        <span className="app-header__name">DigiBrain</span>
+        <img src="/kaika-symbol.svg" width={24} height={24} alt="" aria-hidden="true" className="app-header__logo" />
+        <span className="app-header__name">Kaika</span>
         <span className="app-header__sub">Tech Demo</span>
       </div>
 
