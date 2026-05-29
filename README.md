@@ -2,7 +2,7 @@
 
 A single-page interactive proof of concept for Kaika's core mechanic: visualizing knowledge as a connected graph.
 
-[Live Demo](https://digibrain-tech-demo.vercel.app/)
+[Live Demo](https://kaika-tech-demo.vercel.app/)
 
 ## What it does
 
