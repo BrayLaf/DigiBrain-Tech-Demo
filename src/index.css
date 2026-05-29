@@ -1,51 +1,49 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-
 :root {
   /* Desktop header height; mobile overridden below */
   --header-h: 52px;
 
-  /* ── Palette: Indigo × Slate ──────────────────────────────── */
-  --text:         #64748B;
-  --text-h:       #0F172A;
-  --bg:           #FAFAFA;
-  --border:       #E2E8F0;
-  --code-bg:      #F1F5F9;
-  --accent:       #4F46E5;
-  --accent-bg:    rgba(79, 70, 229, 0.07);
-  --accent-border:rgba(79, 70, 229, 0.35);
-  --social-bg:    rgba(241, 245, 249, 0.7);
+  /* ── Kaika Palette: Bone × Sage ──────────────────────────── */
+  --text:         #7A7268;
+  --text-h:       #14130F;
+  --bg:           #F5EFE2;
+  --border:       rgba(20, 19, 15, 0.13);
+  --code-bg:      #EDE6D8;
+  --accent:       #3F6249;
+  --accent-bg:    rgba(63, 98, 73, 0.08);
+  --accent-border:rgba(63, 98, 73, 0.35);
+  --social-bg:    rgba(237, 230, 216, 0.7);
   --shadow:
-    rgba(0, 0, 0, 0.08) 0 10px 15px -3px,
-    rgba(0, 0, 0, 0.04) 0 4px 6px -2px;
+    rgba(20, 19, 15, 0.07) 0 10px 15px -3px,
+    rgba(20, 19, 15, 0.04) 0 4px 6px -2px;
 
   /* ── Node type tokens ─────────────────────────────────────── */
-  --node-document-bg:     rgba(37, 99, 235, 0.06);
-  --node-document-border: rgba(37, 99, 235, 0.32);
-  --node-document-icon:   #2563EB;
+  --node-document-bg:     rgba(63, 98, 73, 0.07);
+  --node-document-border: rgba(63, 98, 73, 0.32);
+  --node-document-icon:   #3F6249;
 
-  --node-topic-bg:     rgba(124, 58, 237, 0.06);
-  --node-topic-border: rgba(124, 58, 237, 0.32);
-  --node-topic-icon:   #7C3AED;
+  --node-topic-bg:     rgba(125, 90, 58, 0.07);
+  --node-topic-border: rgba(125, 90, 58, 0.30);
+  --node-topic-icon:   #7D5A3A;
 
-  --node-tag-bg:     rgba(5, 150, 105, 0.06);
-  --node-tag-border: rgba(5, 150, 105, 0.28);
-  --node-tag-icon:   #059669;
+  --node-tag-bg:     rgba(95, 140, 108, 0.07);
+  --node-tag-border: rgba(95, 140, 108, 0.30);
+  --node-tag-icon:   #5F8C6C;
 
-  --node-person-bg:     rgba(217, 119, 6, 0.06);
-  --node-person-border: rgba(217, 119, 6, 0.28);
-  --node-person-icon:   #D97706;
+  --node-person-bg:     rgba(176, 125, 54, 0.07);
+  --node-person-border: rgba(176, 125, 54, 0.28);
+  --node-person-icon:   #B07D36;
 
-  --node-memory-bg:     rgba(192, 38, 211, 0.06);
-  --node-memory-border: rgba(192, 38, 211, 0.28);
-  --node-memory-icon:   #C026D3;
+  --node-memory-bg:     rgba(120, 100, 140, 0.07);
+  --node-memory-border: rgba(120, 100, 140, 0.28);
+  --node-memory-icon:   #78648C;
 
-  --node-message-bg:     rgba(8, 145, 178, 0.06);
-  --node-message-border: rgba(8, 145, 178, 0.28);
-  --node-message-icon:   #0891B2;
+  --node-message-bg:     rgba(55, 115, 130, 0.07);
+  --node-message-border: rgba(55, 115, 130, 0.28);
+  --node-message-icon:   #377382;
 
   /* ── Typography ───────────────────────────────────────────── */
-  --sans:    'Plus Jakarta Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: 'Plus Jakarta Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans:    'Outfit', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Outfit', system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono:    ui-monospace, Consolas, monospace;
 
   font: 18px/1.45 var(--sans);
@@ -73,42 +71,42 @@
 /* ── Dark mode ──────────────────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --text:         #94A3B8;
-    --text-h:       #F1F5F9;
-    --bg:           #0D1117;
-    --border:       #21262D;
-    --code-bg:      #161B22;
-    --accent:       #818CF8;
-    --accent-bg:    rgba(129, 140, 248, 0.10);
-    --accent-border:rgba(129, 140, 248, 0.40);
-    --social-bg:    rgba(33, 38, 45, 0.5);
+    --text:         #C9C2B4;
+    --text-h:       #EDE6D8;
+    --bg:           #14130F;
+    --border:       rgba(237, 230, 216, 0.10);
+    --code-bg:      #1C1A16;
+    --accent:       #7FA888;
+    --accent-bg:    rgba(127, 168, 136, 0.12);
+    --accent-border:rgba(127, 168, 136, 0.40);
+    --social-bg:    rgba(28, 26, 22, 0.5);
     --shadow:
-      rgba(0, 0, 0, 0.40) 0 10px 15px -3px,
-      rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+      rgba(0, 0, 0, 0.45) 0 10px 15px -3px,
+      rgba(0, 0, 0, 0.28) 0 4px 6px -2px;
 
-    --node-document-bg:     rgba(96, 165, 250, 0.09);
-    --node-document-border: rgba(96, 165, 250, 0.28);
-    --node-document-icon:   #60A5FA;
+    --node-document-bg:     rgba(127, 168, 136, 0.10);
+    --node-document-border: rgba(127, 168, 136, 0.30);
+    --node-document-icon:   #7FA888;
 
-    --node-topic-bg:     rgba(167, 139, 250, 0.09);
-    --node-topic-border: rgba(167, 139, 250, 0.28);
-    --node-topic-icon:   #A78BFA;
+    --node-topic-bg:     rgba(196, 154, 106, 0.10);
+    --node-topic-border: rgba(196, 154, 106, 0.28);
+    --node-topic-icon:   #C49A6A;
 
-    --node-tag-bg:     rgba(52, 211, 153, 0.09);
-    --node-tag-border: rgba(52, 211, 153, 0.28);
-    --node-tag-icon:   #34D399;
+    --node-tag-bg:     rgba(205, 224, 192, 0.10);
+    --node-tag-border: rgba(205, 224, 192, 0.28);
+    --node-tag-icon:   #CDE0C0;
 
-    --node-person-bg:     rgba(251, 191, 36, 0.09);
-    --node-person-border: rgba(251, 191, 36, 0.28);
-    --node-person-icon:   #FBBF24;
+    --node-person-bg:     rgba(212, 168, 90, 0.10);
+    --node-person-border: rgba(212, 168, 90, 0.28);
+    --node-person-icon:   #D4A85A;
 
-    --node-memory-bg:     rgba(232, 121, 249, 0.09);
-    --node-memory-border: rgba(232, 121, 249, 0.28);
-    --node-memory-icon:   #E879F9;
+    --node-memory-bg:     rgba(181, 148, 196, 0.10);
+    --node-memory-border: rgba(181, 148, 196, 0.28);
+    --node-memory-icon:   #B594C4;
 
-    --node-message-bg:     rgba(34, 211, 238, 0.09);
-    --node-message-border: rgba(34, 211, 238, 0.28);
-    --node-message-icon:   #22D3EE;
+    --node-message-bg:     rgba(90, 192, 208, 0.10);
+    --node-message-border: rgba(90, 192, 208, 0.28);
+    --node-message-icon:   #5AC0D0;
   }
 }
 

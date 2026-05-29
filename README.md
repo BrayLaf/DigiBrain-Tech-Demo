@@ -1,6 +1,6 @@
-# Digibrain — Tech Demo
+# Kaika — Tech Demo
 
-A single-page interactive proof of concept for Digibrain's core mechanic: visualizing knowledge as a connected graph.
+A single-page interactive proof of concept for Kaika's core mechanic: visualizing knowledge as a connected graph.
 
 [Live Demo](https://digibrain-tech-demo.vercel.app/)
 
@@ -43,4 +43,4 @@ Then open `http://localhost:5173`.
 
 ---
 
-> **Note:** This is a limited tech demo and not representative of the full Digibrain application.
+> **Note:** This is a limited tech demo and not representative of the full Kaika application.
