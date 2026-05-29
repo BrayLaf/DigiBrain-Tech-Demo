@@ -1,6 +1,16 @@
+<p align="center">
+  <img src="public/kaika-logo.svg" alt="Kaika" height="72" />
+</p>
+
+<p align="center"><em>開花 · the moment of bloom</em></p>
+
+<br/>
+
 # Kaika — Tech Demo
 
-A single-page interactive proof of concept for Kaika's core mechanic: visualizing knowledge as a connected graph.
+Knowledge doesn't live in documents — it blooms. Kaika maps what you know as a living graph: people, ideas, decisions, and memories branching outward, with new nodes arriving as the work unfolds.
+
+This is a single-page interactive proof of concept for Kaika's core mechanic.
 
 [Live Demo](https://kaika-tech-demo.vercel.app/)
 
