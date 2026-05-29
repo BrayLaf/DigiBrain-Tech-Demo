@@ -184,15 +184,34 @@
     align-items: center;
   }
 
-  /* Row 1: Brand (left) + Privacy (right) */
+  /* Row 1: Brand */
   .app-header__brand {
     flex: 1 1 auto;
     margin-bottom: 8px;
   }
 
+  /* Row 3: Meta — full-width, centered */
   .app-header__meta {
-    flex: 0 0 auto;
+    flex: 0 0 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
     margin-bottom: 8px;
+    order: 3;
+  }
+
+  /* Re-show privacy text (hidden by ≤900px rule) */
+  .app-header__privacy {
+    gap: 5px;
+  }
+
+  .app-header__privacy span {
+    display: inline;
+  }
+
+  /* Re-show team credits (hidden by ≤1100px rule) */
+  .app-header__team {
+    display: flex;
   }
 
   /* Row 2: Toolbar (full width, scrollable) */

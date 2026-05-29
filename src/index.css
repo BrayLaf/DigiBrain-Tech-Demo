@@ -61,10 +61,10 @@
   }
 }
 
-/* Mobile: 2-row header */
+/* Mobile: 3-row header (brand / toolbar / meta) */
 @media (max-width: 768px) {
   :root {
-    --header-h: 90px;
+    --header-h: 110px;
   }
 }
 
